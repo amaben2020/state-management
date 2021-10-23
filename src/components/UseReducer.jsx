@@ -1,6 +1,6 @@
 import { useEffect, useReducer } from 'react';
 
-const data = [
+const Idata = [
   {
     id: 1,
     name: 'Leanne Graham',
@@ -43,46 +43,81 @@ const data = [
   },
 ];
 
+const getAsyncStories = () =>
+  new Promise((resolve) =>
+    setTimeout(() => resolve({ data: { Idata } }), 2000)
+  );
+
+const initialState = {
+  data: [],
+  loading: false,
+  error: false,
+};
+
 const storiesReducer = (state, action) => {
   const { type, payload } = action;
+
   switch (type) {
     case 'SET_STORIES':
-      return payload;
+      return {
+        ...state,
+        loading: false,
+        error: false,
+        data: payload,
+      };
 
     case 'REMOVE_STORY':
-      return state.filter((elem) => elem.id !== payload);
+      return {
+        ...state,
+        loading: false,
+        error: false,
+        data: state.data.filter((elem) => elem.id !== payload),
+      };
 
     default:
       throw new Error();
   }
 };
 
-const UseReducer = () => {
-  const [story, dispatchStories] = useReducer(storiesReducer, []);
+const UseReducer = ({ changer, term }) => {
+  const [story, dispatchStories] = useReducer(storiesReducer, initialState);
+  console.log('STORY', story.data);
+
+  const loadStories = async () => {
+    const value = await getAsyncStories();
+    dispatchStories({ type: 'SET_STORIES', payload: value.data.Idata });
+  };
 
   useEffect(() => {
-    const getStories = () => {
-      dispatchStories({
-        type: 'SET_STORIES',
-        payload: data,
-      });
-    };
-    getStories();
+    loadStories();
   }, []);
 
   const handleRemoveStory = (id) => {
     return dispatchStories({ type: 'REMOVE_STORY', payload: id });
   };
 
+  const filteredData = () => {
+    const val = story.data;
+
+    const filtered = val.filter((element) =>
+      element.username.toLowerCase().includes(term.toLowerCase())
+    );
+    return filtered;
+  };
+
   return (
     <div>
-      {story.map((s) => (
-        <div key={s.id}>
-          {' '}
-          {s.name}
-          <button onClick={() => handleRemoveStory(s.id)}>Delete</button>
-        </div>
-      ))}
+      {story.loading && <p className="text-danger"> Loading...</p>}{' '}
+      <>
+        {filteredData().map((s) => (
+          <div key={s.id}>
+            {' '}
+            {s.name}
+            <button onClick={() => handleRemoveStory(s.id)}>Delete</button>
+          </div>
+        ))}
+        <input type="text" onChange={changer} value={term} />
+      </>
     </div>
   );
 };
