@@ -48,8 +48,10 @@ const storiesReducer = (state, action) => {
   switch (type) {
     case 'SET_STORIES':
       return payload;
+
     case 'REMOVE_STORY':
       return state.filter((elem) => elem.id !== payload);
+
     default:
       throw new Error();
   }
