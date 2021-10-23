@@ -46,15 +46,10 @@ const data = [
 const storiesReducer = (state, action) => {
   const { type, payload } = action;
   switch (type) {
-    // case 'LOADING': {
-    //   return {
-    //     loading: true,
-    //   };
-    // }
-
     case 'SET_STORIES':
       return payload;
-
+    case 'REMOVE_STORY':
+      return state.filter((elem) => elem.id !== payload);
     default:
       throw new Error();
   }
@@ -64,9 +59,6 @@ const UseReducer = () => {
   const [story, dispatchStories] = useReducer(storiesReducer, []);
 
   useEffect(() => {
-    //   dispatchStories({
-    //     type: 'LOADING',
-    //   });
     const getStories = () => {
       dispatchStories({
         type: 'SET_STORIES',
@@ -77,17 +69,13 @@ const UseReducer = () => {
   }, []);
 
   const handleRemoveStory = (id) => {
-    const newStory = data.filter((d) => d.id !== id);
-    dispatchStories({
-      type: 'SET_STORIES',
-      payload: newStory,
-    });
+    return dispatchStories({ type: 'REMOVE_STORY', payload: id });
   };
 
   return (
     <div>
       {story.map((s) => (
-        <div>
+        <div key={s.id}>
           {' '}
           {s.name}
           <button onClick={() => handleRemoveStory(s.id)}>Delete</button>
