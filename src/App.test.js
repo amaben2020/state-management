@@ -1,23 +1,28 @@
-// import { render, screen } from '@testing-library/react';
-// import App from './App';
+import renderer from 'react-test-renderer';
+import {
+  Item,
+  List,
+  SearchForm,
+  InputWithLabel,
+} from './components/DataFetching/DataFetching';
 
-// test('renders learn react link', () => {
-//   render(<App />);
-//   const linkElement = screen.getByText(/learn react/i);
-//   expect(linkElement).toBeInTheDocument();
-// });
+describe('Item', () => {
+  const item = {
+    title: 'React',
+    url: 'https://reactjs.org/',
+    author: 'Jordan Walke',
+    num_comments: 3,
+    points: 4,
+    objectID: 0,
+  };
 
-// test suite
-describe('truthy and falsy', () => {
-  // test case
-  it('true to be true', () => {
-    // test assertion
-    expect(true).toBe(true);
-  });
-
-  // test case
-  it('false to be false', () => {
-    // test assertion
-    expect(false).toBe(false);
+  it('renders all properties', () => {
+    const component = renderer.create(<Item item={item} />);
+    expect(component.root.findByType('a').props.href).toEqual(
+      'https://reactjs.org/'
+    );
+    expect(component.root.findAllByType('span')[1].props.children).toEqual(
+      'Jordan Walke'
+    );
   });
 });
