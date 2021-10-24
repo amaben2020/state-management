@@ -1,12 +1,14 @@
 import React from 'react';
 
-const Input2 = ({ changer, term, handleSearchSubmit }) => {
+const Input2 = ({ changer, term, handleSearchSubmit, submit }) => {
   return (
     <>
-      <input type="text" onChange={changer} value={term} />
-      <button type="button" disabled={!term} onClick={handleSearchSubmit}>
-        Submit
-      </button>
+      <form onSubmit={handleSearchSubmit}>
+        <input type="text" onChange={changer} value={term} />
+        <button type={submit} disabled={!term}>
+          Submit
+        </button>
+      </form>
     </>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useEffect, useReducer } from 'react';
 import Input2 from './Reusable/Input2';
 import axios from 'axios';
+import List from './Reusable/List';
 
 const initialState = {
   data: [],
@@ -9,6 +10,7 @@ const initialState = {
 };
 
 const storiesReducer = (state, action) => {
+  console.log(state);
   const { type, payload } = action;
 
   switch (type) {
@@ -62,16 +64,11 @@ const UseReducer = ({ changer, term, handleSearchSubmit, url }) => {
     <div>
       {story.loading && <p style={{ color: 'red' }}> Loading...</p>}{' '}
       <>
-        {story.data.map((s) => (
-          <div key={s.id}>
-            {' '}
-            <p>{s.title}</p> by : {s.author}
-            <button onClick={() => handleRemoveStory(s.id)}>Delete</button>
-          </div>
-        ))}
+        <List s={story.data} handleRemoveStory={handleRemoveStory} />
         <Input2
           term={term}
           changer={changer}
+          submit="submit"
           handleSearchSubmit={handleSearchSubmit}
         />
       </>

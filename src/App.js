@@ -14,7 +14,9 @@ function App() {
   const onChangeHandler = (e) => {
     return setTerm(e.target.value);
   };
-  const handleSearchSubmit = () => {
+  const handleSearchSubmit = (e) => {
+    //used for onSubmit function; type submit must be on the button
+    e.preventDefault();
     setUrl(`https://hn.algolia.com/api/v1/search?query=${term}`);
   };
 
