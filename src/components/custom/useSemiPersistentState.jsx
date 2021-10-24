@@ -17,13 +17,38 @@
 
 // export default useSemiPersistentState;
 
+// import { useState, useEffect } from 'react';
+
+// const useSemiPersistentState = (localStorageKey, initialState) => {
+//   const [value, setValue] = useState(
+//     localStorage.getItem(localStorageKey) || initialState
+//   );
+
+//   const lsSetter = () => {
+//     return localStorage.setItem(localStorageKey, value);
+//   };
+
+//   useEffect(() => {
+//     lsSetter();
+//   }, [localStorageKey, value]);
+
+//   return [value, setValue];
+// };
+
+// export default useSemiPersistentState;
+
 import { useState, useEffect } from 'react';
 
-const useSemiPersistentState = () => {
-  const [value, setValue] = useState(' ');
+const useSemiPersistentState = (key, initialValue) => {
+  console.log(initialValue);
+  const [term, setTerm] = useState(localStorage.getItem(key) || initialValue);
 
-  useEffect();
-  return <div></div>;
+  //anything that would change should be here
+  useEffect(() => {
+    localStorage.setItem(key, term);
+  }, [key, term]);
+
+  return [term, setTerm];
 };
 
 export default useSemiPersistentState;

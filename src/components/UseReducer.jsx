@@ -1,4 +1,6 @@
 import { useEffect, useReducer } from 'react';
+import Input2 from './Reusable/Input2';
+import axios from 'axios';
 
 const Idata = [
   {
@@ -48,6 +50,8 @@ const getAsyncStories = () =>
     setTimeout(() => resolve({ data: { Idata } }), 2000)
   );
 
+const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
+
 const initialState = {
   data: [],
   loading: false,
@@ -84,8 +88,10 @@ const UseReducer = ({ changer, term }) => {
   console.log('STORY', story.data);
 
   const loadStories = async () => {
-    const value = await getAsyncStories();
-    dispatchStories({ type: 'SET_STORIES', payload: value.data.Idata });
+    const value = axios.get(`${API_ENDPOINT}`);
+    console.log(value.data);
+    // const value = await getAsyncStories();
+    dispatchStories({ type: 'SET_STORIES', payload: value.data });
   };
 
   useEffect(() => {
@@ -98,7 +104,6 @@ const UseReducer = ({ changer, term }) => {
 
   const filteredData = () => {
     const val = story.data;
-
     const filtered = val.filter((element) =>
       element.username.toLowerCase().includes(term.toLowerCase())
     );
@@ -116,7 +121,7 @@ const UseReducer = ({ changer, term }) => {
             <button onClick={() => handleRemoveStory(s.id)}>Delete</button>
           </div>
         ))}
-        <input type="text" onChange={changer} value={term} />
+        <Input2 term={term} changer={changer} />
       </>
     </div>
   );
