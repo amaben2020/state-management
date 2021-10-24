@@ -1,56 +1,6 @@
-import { useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import Input2 from './Reusable/Input2';
 import axios from 'axios';
-
-const Idata = [
-  {
-    id: 1,
-    name: 'Leanne Graham',
-    username: 'Bret',
-    email: 'Sincere@april.biz',
-    phone: '1-770-736-8031 x56442',
-    website: 'hildegard.org',
-  },
-  {
-    id: 2,
-    name: 'Ervin Howell',
-    username: 'Antonette',
-    email: 'Shanna@melissa.tv',
-    phone: '010-692-6593 x09125',
-    website: 'anastasia.net',
-  },
-  {
-    id: 3,
-    name: 'Clementine Bauch',
-    username: 'Samantha',
-    email: 'Nathan@yesenia.net',
-    phone: '1-463-123-4447',
-    website: 'ramiro.info',
-  },
-  {
-    id: 4,
-    name: 'Patricia Lebsack',
-    username: 'Karianne',
-    email: 'Julianne.OConner@kory.org',
-    phone: '493-170-9623 x156',
-    website: 'kale.biz',
-  },
-  {
-    id: 5,
-    name: 'Chelsey Dietrich',
-    username: 'Kamren',
-    email: 'Lucio_Hettinger@annie.ca',
-    phone: '(254)954-1289',
-    website: 'demarco.info',
-  },
-];
-
-const getAsyncStories = () =>
-  new Promise((resolve) =>
-    setTimeout(() => resolve({ data: { Idata } }), 2000)
-  );
-
-const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
 const initialState = {
   data: [],
@@ -62,6 +12,11 @@ const storiesReducer = (state, action) => {
   const { type, payload } = action;
 
   switch (type) {
+    case 'INITIAL_FETCH':
+      return {
+        ...state,
+        loading: true,
+      };
     case 'SET_STORIES':
       return {
         ...state,
@@ -83,45 +38,42 @@ const storiesReducer = (state, action) => {
   }
 };
 
-const UseReducer = ({ changer, term }) => {
+const UseReducer = ({ changer, term, handleSearchSubmit, url }) => {
+  const API_ENDPOINT = url;
   const [story, dispatchStories] = useReducer(storiesReducer, initialState);
-  console.log('STORY', story.data);
 
-  const loadStories = async () => {
-    const value = axios.get(`${API_ENDPOINT}`);
-    console.log(value.data);
-    // const value = await getAsyncStories();
-    dispatchStories({ type: 'SET_STORIES', payload: value.data });
-  };
+  //using useCallback for memoization
+  const loadStories = React.useCallback(async () => {
+    if (term === '') return;
+    dispatchStories({ type: 'INITIAL_FETCH' });
+    const value = await axios.get(API_ENDPOINT);
+    dispatchStories({ type: 'SET_STORIES', payload: value.data.hits });
+  }, [API_ENDPOINT, term]);
 
   useEffect(() => {
     loadStories();
-  }, []);
+  }, [loadStories]);
 
   const handleRemoveStory = (id) => {
     return dispatchStories({ type: 'REMOVE_STORY', payload: id });
   };
 
-  const filteredData = () => {
-    const val = story.data;
-    const filtered = val.filter((element) =>
-      element.username.toLowerCase().includes(term.toLowerCase())
-    );
-    return filtered;
-  };
-
   return (
     <div>
-      {story.loading && <p className="text-danger"> Loading...</p>}{' '}
+      {story.loading && <p style={{ color: 'red' }}> Loading...</p>}{' '}
       <>
-        {filteredData().map((s) => (
+        {story.data.map((s) => (
           <div key={s.id}>
             {' '}
-            {s.name}
+            <p>{s.title}</p> by : {s.author}
             <button onClick={() => handleRemoveStory(s.id)}>Delete</button>
           </div>
         ))}
-        <Input2 term={term} changer={changer} />
+        <Input2
+          term={term}
+          changer={changer}
+          handleSearchSubmit={handleSearchSubmit}
+        />
       </>
     </div>
   );
