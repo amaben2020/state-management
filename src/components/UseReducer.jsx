@@ -2,7 +2,8 @@ import React, { useEffect, useReducer } from 'react';
 import Input2 from './Reusable/Input2';
 import axios from 'axios';
 import List from './Reusable/List';
-
+import { ReactComponent as Check } from '../components/check.svg';
+import './check.css';
 const initialState = {
   data: [],
   loading: false,
@@ -49,6 +50,7 @@ const UseReducer = ({ changer, term, handleSearchSubmit, url }) => {
     if (term === '') return;
     dispatchStories({ type: 'INITIAL_FETCH' });
     const value = await axios.get(API_ENDPOINT);
+    console.log(value.data.hits);
     dispatchStories({ type: 'SET_STORIES', payload: value.data.hits });
   }, [API_ENDPOINT, term]);
 
@@ -64,13 +66,20 @@ const UseReducer = ({ changer, term, handleSearchSubmit, url }) => {
     <div>
       {story.loading && <p style={{ color: 'red' }}> Loading...</p>}{' '}
       <>
-        <List s={story.data} handleRemoveStory={handleRemoveStory} />
+        {story.data.map((s) => (
+          <List key={s.id} s={s} handleRemoveStory={handleRemoveStory} />
+        ))}
+
         <Input2
           term={term}
           changer={changer}
           submit="submit"
           handleSearchSubmit={handleSearchSubmit}
         />
+        <button type="button" className="button button_small">
+          <Check height="18px" width="18px" />
+        </button>
+        <Check height="38px" width="38px" />
       </>
     </div>
   );
