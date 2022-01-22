@@ -36,3 +36,16 @@
     transform: rotate(360deg);
   }
 }
+
+.sort {
+  color: rgb(15, 17, 11);
+}
+
+.sort:active {
+  color: rebeccapurple;
+  background: rosybrown;
+}
+.sort:focus {
+  color: rgb(251, 255, 0);
+  background: salmon;
+}
